@@ -1,0 +1,34 @@
+{
+  "name": "koa-to-express",
+  "version": "1.0.0",
+  "description": "Use a koa middleware in express/connect backward",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover node_modules/mocha/bin/_mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xingxingted/koa-to-express.git"
+  },
+  "keywords": [
+    "koa",
+    "express"
+  ],
+  "author": "Ted Wu <iswujixiang@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xingxingted/koa-to-express/issues"
+  },
+  "homepage": "https://github.com/xingxingted/koa-to-express#readme",
+  "devDependencies": {
+    "express": "^4.15.3",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^3.4.1",
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
+  },
+  "dependencies": {
+    "koa": "^2.2.0",
+    "koa-compose": "^3.2.1"
+  }
+}
