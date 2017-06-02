@@ -4,7 +4,7 @@
   "description": "Use a koa middleware in express/connect backward",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha"
+    "test": "istanbul cover node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec && codecov"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/xingxingted/koa-to-express#readme",
   "devDependencies": {
+    "codecov": "^2.2.0",
     "express": "^4.15.3",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.4.1",
