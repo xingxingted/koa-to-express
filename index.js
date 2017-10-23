@@ -23,7 +23,7 @@ module.exports  = (middleware) => (req, res, next) => {
         .then(() => {
             // allow bypassing koa
             /* istanbul ignore if */
-            if (!ctx.respond) {
+            if (ctx.respond === false) {
                 return next();
             }
 
