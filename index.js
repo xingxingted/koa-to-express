@@ -23,17 +23,27 @@ module.exports  = (middleware) => (req, res, next) => {
         .then(() => {
             // allow bypassing koa
             /* istanbul ignore if */
-            if (false === ctx.respond) return next();
+            if (!ctx.respond) {
+                return next();
+            }
 
             const res = ctx.res;
             /* istanbul ignore if */
-            if (!ctx.writable) return next();
+            if (!ctx.writable) {
+                return next();
+            }
 
-            let body = ctx.body;
+            const {body} = ctx;
             if (null != body) {
-                if (Buffer.isBuffer(body)) return res.send(body);
-                if ('string' == typeof body) return res.send(body);
-                if (body instanceof Stream) return body.pipe(res);
+                if (Buffer.isBuffer(body)) {
+                    return res.send(body);
+                }
+                if (typeof body === 'string') {
+                    return res.send(body);
+                }
+                if (body instanceof Stream) {
+                    return body.pipe(res);
+                }
 
                 // body: json
                 return res.json(body);
