@@ -35,7 +35,7 @@ app.use(k2e(async (ctx) => {
 const agent     = Agent(app);
 
 describe('Koa to Express middleware', () => {
-    it('should response a json', () => agent.get('/json').expect(200).then(({body}) => body.should.be.deepEqual({a: 1})));
+    it('should response json', () => agent.get('/json').expect(200).then(({body}) => body.should.be.deepEqual({a: 1})));
 
     it('should response a string', () => agent.get('/string').expect(200).then(({text}) => text.should.be.equal('sth')));
 
