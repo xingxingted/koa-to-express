@@ -6,13 +6,14 @@
 const fs        = require('fs');
 const Path      = require('path');
 
+const promisify = require('pify');
 const express   = require('express');
 const Agent     = require('supertest').agent;
 
 const k2e       = require('..');
 
 const app       = express();
-app.use(k2e(async (ctx) => {
+app.use(k2e(ctx => {
     let {path}  = ctx;
 
     if (path === '/json') {
@@ -28,7 +29,7 @@ app.use(k2e(async (ctx) => {
     }
 
     if (path === '/buffer') {
-        ctx.body    = await new Promise(resolve => fs.readFile(Path.join(__dirname, 'mocha.opts'), (err, content) => resolve(content)));
+        return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts')).then(content => ctx.body = content);
     }
 }));
 
