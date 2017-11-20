@@ -19,7 +19,7 @@ npm install koa-to-express
 ## Usage
 
 ```
-const k2e       = require('..');
+const k2e       = require('koa-to-express');
 
 const koaMiddleware = (ctx, next) => {
     ctx.body = 'hello world';
