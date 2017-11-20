@@ -27,7 +27,7 @@ module.exports  = (middleware) => (req, res, next) => {
                 return next();
             }
 
-            const res = ctx.res;
+            const {res} = ctx;
             /* istanbul ignore if */
             if (!ctx.writable) {
                 return next();
