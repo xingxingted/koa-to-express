@@ -7,7 +7,7 @@
 Use a **koa** middleware in **express/connect** backward
 
 ## Requirement
-Koa-to-express requires *koa@2.0.0* and *express@4.0.0* or higher.
+Koa-to-express requires *koa@2.0.0* and *express@3.0.0* or higher.
 
 Node 7.6+ is required if you want to use ES2015's *async/await* syntax.
 
