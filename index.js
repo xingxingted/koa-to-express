@@ -7,18 +7,19 @@ const Stream    = require('stream');
 
 const Koa       = require('koa');
 const compose   = require('koa-compose');
+const co        = require('co');
 
 const app       = new Koa;
 
-module.exports  = (middleware) => (req, res, next) => {
+module.exports  = middlewares => (req, res, next) => {
 
-    let ctx     = app.createContext(req, res);
+    const ctx   = app.createContext(req, res);
 
-    if (!Array.isArray(middleware)) {
-        middleware = [middleware];
+    if (!Array.isArray(middlewares)) {
+        middlewares = [middlewares];
     }
 
-    compose(middleware)(ctx)
+    co.wrap(compose(middlewares)).call(ctx)
 
         .then(() => {
             // allow bypassing koa
@@ -27,13 +28,13 @@ module.exports  = (middleware) => (req, res, next) => {
                 return next();
             }
 
-            const {res} = ctx;
+            const res = ctx.res;
             /* istanbul ignore if */
             if (!ctx.writable) {
                 return next();
             }
 
-            const {body} = ctx;
+            const body = ctx.body;
             if (null != body) {
                 if (Buffer.isBuffer(body)) {
                     return res.send(body);
