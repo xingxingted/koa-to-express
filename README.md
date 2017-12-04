@@ -7,9 +7,7 @@
 Use a **koa** middleware in **express/connect** backward
 
 ## Requirement
-Koa-to-express requires *koa@2.0.0* and *express@4.0.0* or higher.
-
-Node 7.6+ is required if you want to use ES2015's *async/await* syntax.
+Koa-to-express requires *koa@1.0.0* and *express@4.0.0* or higher.
 
 ## Installation
 
@@ -22,9 +20,9 @@ npm install koa-to-express
 ```
 const k2e       = require('koa-to-express');
 
-const koaMiddleware = (ctx, next) => {
-    ctx.body = 'hello world';
-    return next();
+const koaMiddleware = function* (next) {
+    this.body = 'hello world';
+    yield next;
 };
 
 require('express')().use(k2e(koaMiddleware)).listen(3000);
