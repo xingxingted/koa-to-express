@@ -13,38 +13,40 @@ const Agent     = require('supertest').agent;
 const k2e       = require('..');
 
 const app       = express();
-app.use(k2e(ctx => {
-    let {path}  = ctx;
+app.use(k2e(function* () {
+    const path  = this.path;
 
     if (path === '/json') {
-        ctx.body    = {a: 1};
+        this.body    = {a: 1};
     }
 
     if (path === '/string') {
-        ctx.body    = 'sth';
+        this.body    = 'sth';
     }
 
     if (path === '/stream') {
-        ctx.body    = fs.createReadStream(Path.join(__dirname, 'mocha.opts'), 'utf8');
+        this.body    = fs.createReadStream(Path.join(__dirname, 'mocha.opts'), 'utf8');
     }
 
     if (path === '/buffer') {
-        return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts')).then(content => ctx.body = content);
+        return this.body = yield promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'))
     }
 }));
 
 const agent     = Agent(app);
 
 describe('Koa to Express middleware', () => {
-    it('should response json', () => agent.get('/json').expect(200).then(({body}) => body.should.be.deepEqual({a: 1})));
+    it('should response json', () => agent.get('/json').expect(200).then(res => res.body.should.be.deepEqual({a: 1})));
 
-    it('should response a string', () => agent.get('/string').expect(200).then(({text}) => text.should.be.equal('sth')));
+    it('should response a string', () => agent.get('/string').expect(200).then(res => res.text.should.be.equal('sth')));
 
     it('should response the file\'s content as a buffer', () => Promise.all([
         agent.get('/stream').expect(200),
         new Promise(resolve => fs.readFile(Path.join(__dirname, 'mocha.opts'), (err, content) => resolve(content)))
     ])
-        .then(([{body}, content]) => {
+        .then(res => {
+            const body = res[0].body;
+            const content = res[1];
             Buffer.isBuffer(body).should.be.ok();
             body.compare(content).should.be.equal(0);
         }));
@@ -53,7 +55,9 @@ describe('Koa to Express middleware', () => {
         agent.get('/buffer').expect(200),
         new Promise(resolve => fs.readFile(Path.join(__dirname, 'mocha.opts'), (err, content) => resolve(content)))
     ])
-        .then(([{body}, content]) => {
+        .then(res => {
+            const body = res[0].body;
+            const content = res[1];
             Buffer.isBuffer(body).should.be.ok();
             body.compare(content).should.be.equal(0);
         }));
