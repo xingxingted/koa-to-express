@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "co": "^4.4.0",
+    "debug": "*",
     "koa": "^1.0.0",
     "koa-compose": "^2.3.0"
   }
