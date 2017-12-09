@@ -1,7 +1,7 @@
 # koa-to-express
 
-[![Build Status](https://travis-ci.org/xingxingted/koa-to-express.svg?branch=1.x)](https://travis-ci.org/xingxingted/koa-to-express)
-[![codecov](https://codecov.io/gh/xingxingted/koa-to-express/branch/1.x/graph/badge.svg)](https://codecov.io/gh/xingxingted/koa-to-express)
+[![Build Status](https://travis-ci.org/xingxingted/koa-to-express.svg?branch=0.x)](https://travis-ci.org/xingxingted/koa-to-express)
+[![codecov](https://codecov.io/gh/xingxingted/koa-to-express/branch/0.x/graph/badge.svg)](https://codecov.io/gh/xingxingted/koa-to-express)
 [![npm version](https://badge.fury.io/js/koa-to-express.svg)](https://badge.fury.io/js/koa-to-express)
 
 Use a **koa** middleware in **express/connect** backward
