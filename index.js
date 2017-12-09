@@ -20,7 +20,7 @@ const k2e       = middlewares => {
 
     const middleware = compose(middlewares);
 
-    debug(`converted middlewares: ${middlewares.map(({name}) => name || '[anonymous]').join()}`);
+    debug(`converted middlewares: ${middlewares.map(middleware => middleware.name || '[anonymous]').join()}`);
 
     return (req, res, next) => {
 
