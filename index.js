@@ -7,6 +7,7 @@ const Stream    = require('stream');
 
 const Koa       = require('koa');
 const compose   = require('koa-compose');
+const debug     = require('debug')('koa-to-express');
 
 const app       = new Koa;
 
@@ -16,6 +17,8 @@ const k2e       = middlewares => {
     }
 
     const middleware = compose(middlewares);
+
+    debug(`converted middlewares: ${middlewares.map(({name}) => name || '[anonymous]').join()}`);
 
     return (req, res, next) => {
 
