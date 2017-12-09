@@ -12,7 +12,7 @@ const app       = new Koa;
 
 module.exports  = (middleware) => (req, res, next) => {
 
-    let ctx     = app.createContext(req, res);
+    const ctx   = app.createContext(req, res);
 
     if (!Array.isArray(middleware)) {
         middleware = [middleware];
@@ -27,13 +27,12 @@ module.exports  = (middleware) => (req, res, next) => {
                 return next();
             }
 
-            const {res} = ctx;
             /* istanbul ignore if */
             if (!ctx.writable) {
                 return next();
             }
 
-            const {body} = ctx;
+            const {res, body} = ctx;
             if (null != body) {
                 if (Buffer.isBuffer(body)) {
                     return res.send(body);
