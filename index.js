@@ -13,6 +13,7 @@ const debug     = require('debug')('koa-to-express');
 const app       = new Koa;
 
 const k2e       = middlewares => {
+    /* istanbul ignore else */
     if (!Array.isArray(middlewares)) {
         middlewares = [middlewares];
     }
