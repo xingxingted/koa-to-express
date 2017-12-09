@@ -10,15 +10,15 @@ const compose   = require('koa-compose');
 
 const app       = new Koa;
 
-module.exports  = (middleware) => (req, res, next) => {
+const k2e       = middlewares => (req, res, next) => {
 
     const ctx   = app.createContext(req, res);
 
-    if (!Array.isArray(middleware)) {
-        middleware = [middleware];
+    if (!Array.isArray(middlewares)) {
+        middlewares = [middlewares];
     }
 
-    compose(middleware)(ctx)
+    compose(middlewares)(ctx)
 
         .then(() => {
             // allow bypassing koa
@@ -54,3 +54,5 @@ module.exports  = (middleware) => (req, res, next) => {
 
         .catch(next);
 };
+
+module.exports  = k2e;
