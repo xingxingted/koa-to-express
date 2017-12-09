@@ -26,7 +26,7 @@ const k2e       = middlewares => {
 
         const ctx   = app.createContext(req, res);
 
-    co.wrap(middleware).call(ctx)
+        co.wrap(middleware).call(ctx)
 
             .then(() => {
                 // allow bypassing koa
