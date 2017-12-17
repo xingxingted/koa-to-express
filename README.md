@@ -60,7 +60,7 @@ require('express')().use(k2e(koaMiddleware)).listen(3000);
 
 ****
 
-* Convert Koa middleware(s) into an Express middleware and return it.
+* Convert Express middleware(s) into a Koa middleware and return it.
 
 ## License
 
