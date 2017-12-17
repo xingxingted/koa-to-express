@@ -9,17 +9,15 @@ const Path      = require('path');
 const promisify = require('pify');
 const express   = require('express');
 const Koa       = require('koa');
-const {agent}   = require('supertest');
+const agent     = require('supertest').agent;
 
-const {expressToKoa} = require('..');
+const expressToKoa = require('..').expressToKoa;
 
 const expressApp = express();
 const koaApp    = new Koa;
 
 const middleware = (req, res, next) => {
-    const {path}  = req;
-
-    if (path === '/json') {
+    if (req.path === '/json') {
         return res.send({a: 1});
     }
 
@@ -28,27 +26,21 @@ const middleware = (req, res, next) => {
 
 const middlewares = [
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/string') {
+        if (req.path === '/string') {
             return res.send('sth');
         }
 
         return next();
     },
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/stream') {
+        if (req.path === '/stream') {
             return res.sendfile(Path.join(__dirname, 'mocha.opts'));
         }
 
         return next();
     },
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/buffer') {
+        if (req.path === '/buffer') {
             return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'))
                 .then(buffer => res.send(buffer))
                 .catch(next);
@@ -57,27 +49,21 @@ const middlewares = [
         return next();
     },
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/500') {
+        if (req.path === '/500') {
             res.status(500);
         }
 
         return next();
     },
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/throw') {
+        if (req.path === '/throw') {
             throw new Error();
         }
 
         return next();
     },
     (req, res, next) => {
-        const {path} = req;
-
-        if (path === '/error') {
+        if (req.path === '/error') {
             return next(new Error())
         }
 
@@ -87,9 +73,7 @@ const middlewares = [
 
 koaApp.use(expressToKoa(middleware));
 koaApp.use(function *(next) {
-    const {path}  = this;
-
-    if (path === '/error') {
+    if (this.path === '/error') {
         this.status = 502;
     }
 
@@ -107,29 +91,29 @@ describe('Express to Koa middleware', () => {
     it('should response json when requesting /json', () => Promise.all([
         expressAgent.get('/json').expect(200),
         koaAgent.get('/json').expect(200)
-    ]).then(([{body: expressBody}, {body: koaBody}]) => expressBody.should.be.deepEqual(koaBody)));
+    ]).then(result => result[0].body.should.be.deepEqual(result[1].body)));
 
     it('should response a string when requesting /string', () => Promise.all([
         expressAgent.get('/string').expect(200),
         koaAgent.get('/string').expect(200)
-    ]).then(([{text: expressText}, {text: koaText}]) => expressText.should.be.equal(koaText)));
+    ]).then(result => result[0].text.should.be.equal(result[1].text)));
 
     it('should response the file\'s content as a buffer when requesting /stream', () => Promise.all([
         expressAgent.get('/stream').expect(200),
         koaAgent.get('/stream').expect(200)
     ])
-        .then(([{body: expressBody}, {body: koaBody}]) => {
-            Buffer.isBuffer(expressBody).should.be.ok();
-            expressBody.compare(koaBody).should.be.equal(0);
+        .then(result => {
+            Buffer.isBuffer(result[0].body).should.be.ok();
+            result[0].body.compare(result[1].body).should.be.equal(0);
         }));
 
     it('should also response the file\'s buffer when requesting /stream', () => Promise.all([
         expressAgent.get('/buffer').expect(200),
         koaAgent.get('/buffer').expect(200)
     ])
-        .then(([{body: expressBody}, {body: koaBody}]) => {
-            Buffer.isBuffer(expressBody).should.be.ok();
-            expressBody.compare(koaBody).should.be.equal(0);
+        .then(result => {
+            Buffer.isBuffer(result[0].body).should.be.ok();
+            result[0].body.compare(result[1].body).should.be.equal(0);
         }));
 
     it('should response 500 when pass an error to the next', () => Promise.all([
