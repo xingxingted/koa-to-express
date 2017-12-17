@@ -7,61 +7,140 @@ const fs        = require('fs');
 const Path      = require('path');
 
 const promisify = require('pify');
+const express   = require('express');
 const Koa       = require('koa');
-const {agent: Agent} = require('supertest');
+const {agent}   = require('supertest');
 
 const {expressToKoa} = require('..');
 
-const app       = new Koa;
-app.use(expressToKoa((req, res, next) => {
+const expressApp = express();
+const koaApp    = new Koa;
+
+const middleware = (req, res, next) => {
     const {path}  = req;
 
     if (path === '/json') {
         return res.send({a: 1});
     }
 
-    if (path === '/string') {
-        return res.send('sth');
+    return next();
+};
+
+const middlewares = [
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/string') {
+            return res.send('sth');
+        }
+
+        return next();
+    },
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/stream') {
+            return res.sendfile(Path.join(__dirname, 'mocha.opts'));
+        }
+
+        return next();
+    },
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/buffer') {
+            return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'))
+                .then(buffer => res.send(buffer))
+                .catch(next);
+        }
+
+        return next();
+    },
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/500') {
+            res.status(500);
+        }
+
+        return next();
+    },
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/throw') {
+            throw new Error();
+        }
+
+        return next();
+    },
+    (req, res, next) => {
+        const {path} = req;
+
+        if (path === '/error') {
+            return next(new Error())
+        }
+
+        return next();
+    }
+];
+
+koaApp.use(expressToKoa(middleware));
+koaApp.use((ctx, next) => {
+    const {path}  = ctx;
+
+    if (path === '/error') {
+        ctx.status = 502;
     }
 
-    if (path === '/stream') {
-        return fs.createReadStream(Path.join(__dirname, 'mocha.opts'), 'utf8')
-            .on('error', next)
-            .pipe(res.on('error', next));
-    }
+    return next();
+});
+koaApp.use(expressToKoa(middlewares));
 
-    if (path === '/buffer') {
-        return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'))
-            .then(buffer => res.send(buffer))
-            .catch(next);
-    }
+expressApp.use(middleware);
+middlewares.forEach(middleware => expressApp.use(middleware));
 
-    next();
-}));
+const expressAgent = agent(expressApp);
+const koaAgent = agent(koaApp.callback());
 
-const agent     = Agent(app.callback());
+describe('Express to Koa middleware', () => {
+    it('should response json when requesting /json', () => Promise.all([
+        expressAgent.get('/json').expect(200),
+        koaAgent.get('/json').expect(200)
+    ]).then(([{body: expressBody}, {body: koaBody}]) => expressBody.should.be.deepEqual(koaBody)));
 
-describe('Koa to Express middleware', () => {
-    it('should response json', () => agent.get('/json').expect(200).then(({body}) => body.should.be.deepEqual({a: 1})));
+    it('should response a string when requesting /string', () => Promise.all([
+        expressAgent.get('/string').expect(200),
+        koaAgent.get('/string').expect(200)
+    ]).then(([{text: expressText}, {text: koaText}]) => expressText.should.be.equal(koaText)));
 
-    it('should response a string', () => agent.get('/string').expect(200).then(({text}) => text.should.be.equal('sth')));
-
-    it('should response the file\'s content as a buffer', () => Promise.all([
-        agent.get('/stream').expect(200),
-        promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'), 'utf8')
+    it('should response the file\'s content as a buffer when requesting /stream', () => Promise.all([
+        expressAgent.get('/stream').expect(200),
+        koaAgent.get('/stream').expect(200)
     ])
-        .then(([{text}, content]) => {
-            text.should.be.equal(content);
+        .then(([{body: expressBody}, {body: koaBody}]) => {
+            Buffer.isBuffer(expressBody).should.be.ok();
+            expressBody.compare(koaBody).should.be.equal(0);
         }));
 
-    it('should also response the file\'s buffer', () => Promise.all([
-        agent.get('/buffer').expect(200),
-        promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'))
+    it('should also response the file\'s buffer when requesting /stream', () => Promise.all([
+        expressAgent.get('/buffer').expect(200),
+        koaAgent.get('/buffer').expect(200)
     ])
-        .then(([{body}, content]) => {
-            Buffer.isBuffer(body).should.be.ok();
-            body.compare(content).should.be.equal(0);
+        .then(([{body: expressBody}, {body: koaBody}]) => {
+            Buffer.isBuffer(expressBody).should.be.ok();
+            expressBody.compare(koaBody).should.be.equal(0);
         }));
 
-    it('should response 404', () => agent.get('/404').expect(404));
+    it('should response 500 when pass an error to the next', () => Promise.all([
+        expressAgent.get('/error').expect(500),
+        koaAgent.get('/error').expect(500)
+    ]));
+
+    it('should response 500 and throw an error when requesting /throw', () => Promise.all([
+        expressAgent.get('/throw').expect(500),
+        koaAgent.get('/throw').expect(500)
+    ]));
+
+    it('should response 404', () => expressAgent.get('/404').expect(404));
 });
