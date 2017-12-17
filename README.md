@@ -13,6 +13,8 @@ Koa-to-express requires *koa@2.0.0* and *express@4.0.0* or higher.
 
 Node 7.6+ is required if you want to use ES2015's *async/await* syntax.
 
+Please go to [koa-to-express@1.x](https://github.com/xingxingted/koa-to-express/tree/1.x) if you want to use koa1.
+
 ## Installation
 Npm 5.x
 ```
