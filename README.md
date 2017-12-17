@@ -42,7 +42,7 @@ require('express')().use(k2e(koaMiddleware)).listen(3000);
 
 ## API
 
-### koaToExpress[.koaToExpress] (middleware)
+### koaToExpress[.koaToExpress]\(middleware)
 
 - **middleware** : `Function|Array<Function>`
 
