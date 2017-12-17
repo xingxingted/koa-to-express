@@ -11,15 +11,17 @@ It could convert a middleware to another form between Express and koa middleware
 ## Requirement
 Koa-to-express requires *koa@1.0.0* and *express@4.0.0* or higher.
 
+Please go to [koa-to-express@3.x](https://github.com/xingxingted/koa-to-express) if you want to use koa2.
+
 ## Installation
 Npm 5.x
 ```
-npm install koa-to-express [-P]
+npm install koa-to-express@1.x [-P]
 ```
 
 Others
 ```
-npm install koa-to-express -S
+npm install koa-to-express@1.x -S
 ```
 
 ## Usage
