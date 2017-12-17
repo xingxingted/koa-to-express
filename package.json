@@ -1,7 +1,7 @@
 {
   "name": "koa-to-express",
   "version": "3.0.3",
-  "description": "Use a koa middleware in express/connect backward",
+  "description": "Use a Koa/Express middleware in an Express/Koa app",
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && codecov",
