@@ -23,7 +23,6 @@
   "homepage": "https://github.com/xingxingted/koa-to-express#readme",
   "devDependencies": {
     "codecov": "^2.2.0",
-    "express": "^3.0.0",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.4.1",
     "pify": "^3.0.0",
@@ -33,6 +32,7 @@
   "dependencies": {
     "co": "^4.4.0",
     "debug": "*",
+    "express": "^3.0.0",
     "koa": "^1.0.0",
     "koa-compose": "^2.3.0"
   }
