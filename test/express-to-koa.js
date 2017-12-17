@@ -86,14 +86,14 @@ const middlewares = [
 ];
 
 koaApp.use(expressToKoa(middleware));
-koaApp.use((ctx, next) => {
-    const {path}  = ctx;
+koaApp.use(function *(next) {
+    const {path}  = this;
 
     if (path === '/error') {
-        ctx.status = 502;
+        this.status = 502;
     }
 
-    return next();
+    yield next;
 });
 koaApp.use(expressToKoa(middlewares));
 
