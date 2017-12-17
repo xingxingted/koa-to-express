@@ -16,73 +16,73 @@ const k2e       = require('..');
 const expressApp = express();
 const koaApp    = new Koa;
 
-const middleware = (ctx, next) => {
-    const {path}  = ctx;
+const middleware = function *(next) {
+    const {path}  = this;
 
     if (path === '/json') {
-        ctx.body    = {a: 1};
+        return this.body    = {a: 1};
     }
 
-    return next();
+    yield next;
 };
 
 const middlewares = [
-    (ctx, next) => {
-        const {path}  = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/string') {
-            ctx.body    = 'sth';
+            return this.body = 'sth';
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path}  = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/stream') {
-            ctx.body    = fs.createReadStream(Path.join(__dirname, 'mocha.opts'), 'utf8');
+            return this.body = fs.createReadStream(Path.join(__dirname, 'mocha.opts'), 'utf8');
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path}  = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/buffer') {
-            return promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts')).then(content => ctx.body = content);
+            return this.body = yield promisify(fs.readFile)(Path.join(__dirname, 'mocha.opts'));
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path}  = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/reject') {
-            return Promise.reject('hehe');
+            return yield Promise.reject('hehe');
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path}  = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/error') {
-            ctx.status = 500;
+            this.status = 500;
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path} = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/throw') {
-            ctx.throw(401, 'denied');
+            this.throw(401, 'denied');
         }
 
-        return next();
+        yield next;
     },
-    (ctx, next) => {
-        const {path} = ctx;
+    function *(next) {
+        const {path} = this;
 
         if (path === '/ENOENT') {
             const err = new Error();
@@ -90,7 +90,7 @@ const middlewares = [
             throw err;
         }
 
-        return next();
+        yield next;
     }
 ];
 
