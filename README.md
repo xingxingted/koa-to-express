@@ -52,9 +52,9 @@ require('express')().use(k2e(koaMiddleware)).listen(3000);
 
 * Convert Koa middleware(s) into an Express middleware and return it.
 
-* Note that the second parameter (usually named as "next") passed to the middleware or the last one of the middlewares is `() => Promise.resolve()`, because the cascading category between [Koa](https://github.com/koajs/koa/blob/master/docs/api/index.md#cascading) and [Express](http://expressjs.com/en/guide/writing-middleware.html) is different and the end of the rest Express middlewares executing can't be inform back.
+* Note that the second parameter (usually named as "next") passed to the last one of the middlewares is `() => Promise.resolve()`, because the cascading categories between [Koa](https://github.com/koajs/koa/blob/master/docs/api/index.md#cascading) and [Express](http://expressjs.com/en/guide/writing-middleware.html) are different and the end of the rest Express middlewares executing can't be informed back.
 
-* It means that, resolving or rejecting the Koa middleware(s), which is actually a promise, will call the next middleware (as call the Express's `next()`) or throw out an error (as call the `next(err)`).
+* It means that, resolving or rejecting the Koa middleware(s), which will return a resolved or rejected promise, will call the next middleware (as calling the Express's `next()`) or throw out an error (as calling the `next(err)`).
 
 ### koaToExpress.expressToKoa(middleware)
 
