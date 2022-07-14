@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/xingxingted/koa-to-express#readme",
   "devDependencies": {
+    "@koa/router": "^11.0.1",
     "codecov": "^2.2.0",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.4.1",
